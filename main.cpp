@@ -342,6 +342,67 @@ void ellipseDirect(HDC hdc, int xc, int yc, int a, int b, COLORREF color)
     }
 }
 
+void ellipseMidPointNotModified(HDC hdc, int xc, int yc, int a, int b, COLORREF color)
+{
+    int aSquare = a*a,
+        bSquare = b*b,
+        abSquare = a*a*b*b;
+
+    double d;
+
+    int x = 0,
+        y = b;
+
+    while(x<=a)
+    {
+        draw4Points(hdc,xc,yc,x,y,color);
+        d = bSquare * ((x+1) * (x+1)) + aSquare * ((y-0.5) * (y-0.5)) - abSquare;
+        if(d<0)
+        {
+            x++;
+        }
+        else
+        {
+            x++;
+            y--;
+        }
+    }
+}
+
+
+
+void ellipseMidPoint(HDC hdc, int xc, int yc, int a, int b, COLORREF color)
+{
+    int aSquare = a*a,
+        bSquare = b*b,
+        abSquare = a*a*b*b,
+        constInUnder = 3 * bSquare,
+        constInAbove = 10 * aSquare;
+
+    double d,dUnder,dAbove;
+
+    double x = 0,
+        y = b;
+
+    while(x<=a && y >= 0)
+    {
+        d = bSquare * ((x+1) * (x+1)) + aSquare * ((y-0.5) * (y-0.5)) - abSquare;
+        dUnder += -x * bSquare + constInUnder;
+        if(d<0)
+        {
+            d += dUnder;
+            x+=0.1;
+        }
+        else
+        {
+            d += dUnder*4 + 8 * y *  aSquare + constInAbove;
+            x+=0.1;
+            y--;
+        }
+        draw4Points(hdc,xc,yc,roundUp(x),roundUp(y),color);
+    }
+}
+
 #include<cmath>
 void ellipsePolar(HDC hdc, int xc, int yc, int a, int b, COLORREF color)
 {
@@ -387,7 +448,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             case 1:
                 b = abs(yc-HIWORD(lParam));
                 hdc = GetDC(hwnd);
-                ellipseDirect(hdc,xc,yc,a,b,BLACK_BRUSH);
+                ellipseMidPoint(hdc,xc,yc,a,b,BLACK_BRUSH);
                 ReleaseDC(hwnd, hdc);
 
             default:

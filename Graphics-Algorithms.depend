@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1557016005 source:e:\fci\year#3\term2\graphics\project\git repo\graphics-algorithms\main.cpp
+	<tchar.h>
+	<windows.h>
+	<bits/stdc++.h>
+	<math.h>
+	<cmath>
+
